@@ -9,6 +9,7 @@ class Dashboard extends CI_Controller {
         date_default_timezone_set('Asia/Jakarta');
         $this->load->model('m_login');
         $this->load->model('m_data');
+        $this->load->helper('text');
         /* cek session login, jika session status tidak sama dengan session telah_login, berarti pengguna belum login
            maka halaman login akan dialihkan kembali ke halaman login.
         */
@@ -619,6 +620,269 @@ public function portfolio_hapus($id)
     redirect(base_url('dashboard/portfolio'));
 }
 
+    // ============================================
+// DATA LAYANAN
+// ============================================
+public function layanan()
+{
+    $data['layanan'] = $this->db->query("
+        SELECT *
+        FROM layanan
+        ORDER BY layanan_id DESC
+    ")->result();
+
+    $this->load->view('dashboard/v_header');
+    $this->load->view('dashboard/v_layanan', $data);
+    $this->load->view('dashboard/v_footer');
+}
+
+// ============================================
+// FORM TAMBAH LAYANAN
+// ============================================
+public function layanan_tambah()
+{
+    $this->load->view('dashboard/v_header');
+    $this->load->view('dashboard/v_layanan_tambah');
+    $this->load->view('dashboard/v_footer');
+}
+
+// ============================================
+// ACTION TAMBAH LAYANAN
+// ============================================
+public function layanan_tambah_aksi()
+{
+    $this->form_validation->set_rules('judul', 'Judul', 'required');
+    $this->form_validation->set_rules('deskripsi', 'Deskripsi', 'required');
+
+    // Cek jika file gambar kosong
+    if (empty($_FILES['gambar']['name'])) {
+        $this->form_validation->set_rules('gambar', 'Gambar', 'required');
+    }
+
+    if ($this->form_validation->run() != false) {
+        $config['upload_path']   = './gambar/layanan/';
+        $config['allowed_types'] = 'jpg|jpeg|png|webp';
+        $config['max_size']      = 4096;
+
+        $this->load->library('upload', $config);
+
+        if ($this->upload->do_upload('gambar')) {
+            $gambar = $this->upload->data();
+            $judul  = $this->input->post('judul');
+
+            $data = [
+                'layanan_judul'     => $judul,
+                'layanan_slug'      => strtolower(url_title($judul)),
+                'layanan_deskripsi' => $this->input->post('deskripsi'),
+                'layanan_gambar'    => $gambar['file_name'],
+                'layanan_status'    => $this->input->post('status') ?: 'draft',
+                'layanan_tanggal'   => date('Y-m-d H:i:s')
+            ];
+
+            $this->m_data->insert_data('layanan', $data);
+            redirect(base_url('dashboard/layanan'));
+
+        } else {
+            // Jika upload gagal, tampilkan error
+            $data['error'] = $this->upload->display_errors();
+            $this->load->view('dashboard/v_header');
+            $this->load->view('dashboard/v_layanan_tambah', $data);
+            $this->load->view('dashboard/v_footer');
+        }
+
+    } else {
+        // Validasi gagal, tampilkan form lagi
+        $data['error'] = validation_errors(); // menampilkan error validasi
+        $this->load->view('dashboard/v_header');
+        $this->load->view('dashboard/v_layanan_tambah', $data);
+        $this->load->view('dashboard/v_footer');
+    }
+}
+
+
+// ============================================
+// FORM EDIT LAYANAN
+// ============================================
+public function layanan_edit($id)
+{
+    $where = ['layanan_id' => $id];
+    $data['layanan'] = $this->m_data->edit_data('layanan', $where)->row();
+
+    if (!$data['layanan']) {
+        redirect(base_url('dashboard/layanan'));
+    }
+
+    $this->load->view('dashboard/v_header');
+    $this->load->view('dashboard/v_layanan_edit', $data);
+    $this->load->view('dashboard/v_footer');
+}
+
+// ============================================
+// UPDATE LAYANAN
+// ============================================
+public function layanan_update()
+{
+    $this->form_validation->set_rules('judul', 'Judul', 'required');
+    $this->form_validation->set_rules('deskripsi', 'Deskripsi', 'required');
+
+    if ($this->form_validation->run() != false) {
+
+        $id    = $this->input->post('id');
+        $judul = $this->input->post('judul');
+        $where = ['layanan_id' => $id];
+
+        $data = [
+            'layanan_judul'     => $judul,
+            'layanan_slug'      => strtolower(url_title($judul)),
+            'layanan_deskripsi' => $this->input->post('deskripsi'),
+            'layanan_status'    => $this->input->post('status') ? $this->input->post('status') : 'draft'
+        ];
+
+        $this->m_data->update_data('layanan', $data, $where);
+
+        // jika upload gambar baru
+        if (!empty($_FILES['gambar']['name'])) {
+            $config['upload_path']   = './gambar/layanan/';
+            $config['allowed_types'] = 'jpg|jpeg|png|webp';
+            $this->load->library('upload', $config);
+
+            if ($this->upload->do_upload('gambar')) {
+                $gambar = $this->upload->data();
+                $this->m_data->update_data(
+                    'layanan',
+                    ['layanan_gambar' => $gambar['file_name']],
+                    $where
+                );
+            }
+        }
+
+        redirect(base_url('dashboard/layanan'));
+
+    } else {
+        $id = $this->input->post('id');
+        $where = ['layanan_id' => $id];
+        $data['layanan'] = $this->m_data->edit_data('layanan', $where)->row();
+
+        $this->load->view('dashboard/v_header');
+        $this->load->view('dashboard/v_layanan_edit', $data);
+        $this->load->view('dashboard/v_footer');
+    }
+}
+
+// ============================================
+// HAPUS LAYANAN
+// ============================================
+public function layanan_hapus($id)
+{
+    $where = ['layanan_id' => $id];
+    $this->m_data->delete_data('layanan', $where);
+    redirect(base_url('dashboard/layanan'));
+}
+
+
+public function testimonial()
+{
+    $data['testimonial'] = $this->db
+        ->order_by('testimonial_id','DESC')
+        ->get('testimonial')
+        ->result();
+
+    $this->load->view('dashboard/v_header');
+    $this->load->view('dashboard/v_testimonial', $data);
+    $this->load->view('dashboard/v_footer');
+}
+
+public function testimonial_tambah()
+{
+    $this->load->view('dashboard/v_header');
+    $this->load->view('dashboard/v_testimonial_tambah');
+    $this->load->view('dashboard/v_footer');
+}
+
+public function testimonial_tambah_aksi()
+{
+    $this->form_validation->set_rules('nama','Nama','required');
+    $this->form_validation->set_rules('isi','Isi','required');
+
+    if ($this->form_validation->run()) {
+
+        $config['upload_path']   = './gambar/testimonial/';
+        $config['allowed_types'] = 'jpg|jpeg|png|webp';
+        $config['max_size']      = 4096;
+
+        $this->load->library('upload', $config);
+
+        $foto = '';
+        if (!empty($_FILES['foto']['name'])) {
+            if ($this->upload->do_upload('foto')) {
+                $foto = $this->upload->data('file_name');
+            }
+        }
+
+        $data = [
+            'testimonial_nama'    => $this->input->post('nama'),
+            'testimonial_isi'     => $this->input->post('isi'),
+            'testimonial_foto'    => $foto,
+            'testimonial_status'  => $this->input->post('status'),
+            'testimonial_tanggal' => date('Y-m-d H:i:s')
+        ];
+
+        $this->m_data->insert_data('testimonial', $data);
+        redirect('dashboard/testimonial');
+
+    } else {
+        $this->testimonial_tambah();
+    }
+}
+
+public function testimonial_edit($id)
+{
+    $data['testimonial'] = $this->db
+        ->get_where('testimonial',['testimonial_id'=>$id])
+        ->row();
+
+    $this->load->view('dashboard/v_header');
+    $this->load->view('dashboard/v_testimonial_edit',$data);
+    $this->load->view('dashboard/v_footer');
+}
+
+public function testimonial_update()
+{
+    $id = $this->input->post('id');
+
+    $data = [
+        'testimonial_nama'   => $this->input->post('nama'),
+        'testimonial_isi'    => $this->input->post('isi'),
+        'testimonial_status' => $this->input->post('status')
+    ];
+
+    $this->m_data->update_data('testimonial',$data,['testimonial_id'=>$id]);
+
+    if (!empty($_FILES['foto']['name'])) {
+        $config['upload_path']   = './gambar/testimonial/';
+        $config['allowed_types'] = 'jpg|jpeg|png|webp';
+        $this->load->library('upload', $config);
+
+        if ($this->upload->do_upload('foto')) {
+            $foto = $this->upload->data('file_name');
+            $this->m_data->update_data(
+                'testimonial',
+                ['testimonial_foto'=>$foto],
+                ['testimonial_id'=>$id]
+            );
+        }
+    }
+
+    redirect('dashboard/testimonial');
+}
+
+public function testimonial_hapus($id)
+{
+    $this->m_data->delete_data('testimonial',['testimonial_id'=>$id]);
+    redirect('dashboard/testimonial');
+}
+
+
     public function profil()
     {
         //ambil id pengguna yang sedang login
@@ -859,57 +1123,6 @@ public function portfolio_hapus($id)
         );
         $this->m_data->update_data('artikel',$d,$w);
         redirect(base_url().'dashboard/pengguna');
-    }
-
-// =====================
-// TESTIMONIAL (ADMIN)
-// =====================
-
-public function testimonial()
-{
-    $data['testimonial'] = $this->db
-        ->order_by('testimonial_status', 'ASC') // pending di atas
-        ->order_by('testimonial_id', 'DESC')
-        ->get('testimonial')
-        ->result();
-
-    $this->load->view('dashboard/v_header');
-    $this->load->view('dashboard/v_testimonial', $data);
-    $this->load->view('dashboard/v_footer');
-}
-
-public function testimonial_approve($id)
-{
-    // pastikan data ada
-    $cek = $this->db
-        ->get_where('testimonial', ['testimonial_id' => $id])
-        ->row();
-
-    if ($cek) {
-        $this->m_data->update_data(
-            'testimonial',
-            ['testimonial_status' => 'approved'],
-            ['testimonial_id' => $id]
-        );
-    }
-
-    redirect(base_url('dashboard/testimonial'));
-}
-
-public function testimonial_hapus($id)
-{
-    $this->m_data->delete_data(
-        'testimonial',
-        ['testimonial_id' => $id]
-    );
-
-    redirect(base_url('dashboard/testimonial'));
-}
-
-    function keluar()
-    {
-        $this->session->sess_destroy();
-        redirect('login');
     }
 }
 ?>

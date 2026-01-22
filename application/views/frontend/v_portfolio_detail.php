@@ -1,4 +1,8 @@
-<!-- INTRO SECTION -->
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
+?>
+
+<!-- ================= INTRO SECTION ================= -->
 <div class="intro intro-single route bg-image" 
      style="background-image: url('<?= base_url(); ?>assets_frontend/img/background.jpg');">
 
@@ -7,7 +11,7 @@
   <div class="intro-content d-flex align-items-center">
     <div class="container text-center">
 
-      <h2 class="intro-title mb-3">Detail Portfolio</h2>
+      <h2 class="intro-title mb-3">Detail Portofolio</h2>
 
       <nav aria-label="breadcrumb">
         <ol class="breadcrumb justify-content-center">
@@ -24,10 +28,9 @@
     </div>
   </div>
 </div>
-<!-- END INTRO SECTION -->
+<!-- ================= END INTRO ================= -->
 
-
-<!-- PORTFOLIO DETAIL SECTION -->
+<!-- ================= PORTFOLIO DETAIL ================= -->
 <section class="page-section py-5" id="portfolio-detail">
   <div class="container">
     <div class="row justify-content-center">
@@ -45,33 +48,31 @@
           </div>
         <?php endif; ?>
 
-        <article class="page-article mb-4">
+        <article class="page-article text-center">
 
-          <!-- Judul -->
-          <header class="text-center mb-4">
-            <h1 class="page-title"><?= $p->portfolio_judul ?></h1>
-            <div class="title-line"></div>
+          <!-- Gambar Portofolio -->
+          <?php
+          if (!empty($p->portfolio_gambar) && file_exists(FCPATH.'gambar/portfolio/'.$p->portfolio_gambar)) {
+              $foto = base_url('gambar/portfolio/'.$p->portfolio_gambar);
+          } else {
+              $foto = base_url('assets_frontend/img/user-default.png');
+          }
+          ?>
+          <img src="<?= $foto ?>" 
+               class="portfolio-gambar mb-3" 
+               alt="<?= $p->portfolio_judul ?>">
 
-            <p class="text-muted mt-2" style="font-size:15px;">
-              <?= $p->kategori_nama ?: 'Uncategorized'; ?>
-            </p>
-          </header>
+          <!-- Judul Portofolio -->
+          <h2 class="page-title mb-2"><?= $p->portfolio_judul ?></h2>
+          <div class="title-line mb-3"></div>
 
-          <!-- Gambar -->
-          <?php if (!empty($p->portfolio_gambar) && file_exists(FCPATH."gambar/portfolio/".$p->portfolio_gambar)): ?>
-            <div class="post-thumb mb-4 text-center">
-              <img src="<?= base_url('gambar/portfolio/'.$p->portfolio_gambar); ?>" 
-                   alt="<?= $p->portfolio_judul; ?>" 
-                   class="img-fluid rounded">
-            </div>
-          <?php elseif(!empty($p->portfolio_gambar)): ?>
-            <div class="post-thumb mb-4 text-center">
-              <span class="text-warning">Gambar tidak ditemukan</span>
-            </div>
-          <?php endif; ?>
+          <!-- Kategori -->
+          <p class="text-muted mb-4" style="font-size:15px;">
+            <?= $p->kategori_nama ?: 'Uncategorized'; ?>
+          </p>
 
           <!-- Deskripsi -->
-          <div class="article-content" style="font-size:17px; line-height:1.75; color:#444;">
+          <div class="article-content portfolio-text">
             <?= nl2br($p->portfolio_deskripsi); ?>
           </div>
 
@@ -79,7 +80,7 @@
 
         <?php else: ?>
           <div class="text-center py-5">
-            <h4 class="text-muted">Portfolio tidak ditemukan.</h4>
+            <h4 class="text-muted">Portofolio tidak ditemukan.</h4>
           </div>
         <?php endif; ?>
 
@@ -88,76 +89,74 @@
     </div>
   </div>
 </section>
-<!-- END PORTFOLIO DETAIL -->
+<!-- ================= END PORTFOLIO DETAIL ================= -->
 
-
-<!-- STYLE – SAME DESIGN SYSTEM AS BLOG/PAGE -->
+<!-- ================= STYLE ================= -->
 <style>
-/* INTRO SECTION */
+/* INTRO */
 .intro-single {
     position: relative;
     background-size: cover;
     background-position: center;
     padding: 130px 0 110px;
-    color: #fff;
 }
+
 .intro-overlay {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    inset: 0;
     background: rgba(0,0,0,0.65);
 }
+
 .intro-content { position: relative; z-index: 2; }
-.intro-title {
-    font-size: 42px;
-    font-weight: 700;
-    color: #fff;
-}
+.intro-title { font-size: 42px; font-weight: 700; color: #fff; }
 
 /* Breadcrumb */
-.breadcrumb {
-    background: transparent;
-    margin: 0;
-    font-size: 15px;
-}
-.breadcrumb a { color: #ddd; transition: 0.25s; }
+.breadcrumb { background: transparent; margin:0; font-size:15px; }
+.breadcrumb a { color: #ddd; transition:0.25s; }
 .breadcrumb a:hover { color: #00aaff; }
-.breadcrumb-item.active { color: #fff; }
+.breadcrumb-item.active { color:#fff; }
 
 /* PAGE SECTION */
-.page-section {
-    background: #f7f7f7;
-}
+.page-section { background: #f7f7f7; }
 
 /* CONTENT BOX */
 .page-article {
     background: #fff;
-    padding: 35px 30px;
-    border-radius: 8px;
-    box-shadow: 0 3px 18px rgba(0,0,0,0.08);
+    padding: 40px 35px;
+    border-radius: 10px;
+    box-shadow: 0 6px 25px rgba(0,0,0,0.08);
+    text-align: center;
+}
+
+/* PORTFOLIO IMAGE */
+.portfolio-gambar {
+    width: 100%;
+    max-width: 500px;
+    height: auto;
+    display: block;
+    margin: 0 auto 20px auto;
+    border-radius: 5px; /* opsional, bisa dihapus jika mau kotak murni */
 }
 
 /* TITLE */
-.page-title {
-    font-size: 32px;
-    font-weight: 700;
-    color: #111;
-}
+.page-title { font-size: 28px; font-weight: 700; color: #111; }
 
 /* GARIS BIRU */
 .title-line {
     width: 70px;
     height: 4px;
     background: #00aaff;
-    margin: 0 auto;
+    margin: 0 auto 15px auto;
     border-radius: 3px;
 }
+
+/* TEXT */
+.portfolio-text { font-size: 18px; line-height: 1.8; color: #444; }
 
 /* RESPONSIVE */
 @media (max-width: 768px) {
     .intro-title { font-size: 34px; }
-    .page-title { font-size: 26px; }
+    .page-title { font-size: 24px; }
 }
 </style>
+<!-- ================= END STYLE ================= -->

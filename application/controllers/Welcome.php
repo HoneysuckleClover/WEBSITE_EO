@@ -35,11 +35,21 @@ class Welcome extends CI_Controller {
     LIMIT 6
     ")->result();
 
-   $data['testimonial'] = $this->db
-    ->where('testimonial_status', 'approved')
+    // Testimonial (homepage, ambil 6 terbaru)
+    $data['testimonial'] = $this->db
+    ->where('testimonial_status', 'publish')
     ->order_by('testimonial_id', 'DESC')
-    ->limit(6) 
+    ->limit(6)
     ->get('testimonial')
+    ->result();
+
+
+    // Layanan (pakai gambar, bukan icon)
+// Layanan (tanpa kategori, pakai gambar)
+$data['layanan'] = $this->db
+    ->where('layanan_status', 'publish')
+    ->order_by('layanan_id', 'DESC')
+    ->get('layanan')
     ->result();
 
     // Pengaturan website
@@ -361,5 +371,82 @@ public function portfolio($slug)
     $this->load->view('frontend/v_portfolio_detail', $data);
     $this->load->view('frontend/v_footer', $data);
 }
+
+public function layanan($slug)
+{
+    // Pengaturan website
+    $data['pengaturan'] = $this->m_data->get_data('pengaturan')->row();
+
+    // Ambil layanan berdasarkan slug
+    $layanan = $this->db
+        ->where('layanan_slug', $slug)
+        ->where('layanan_status', 'publish')
+        ->limit(1)
+        ->get('layanan')
+        ->result();
+
+    // Jika tidak ditemukan
+    if (count($layanan) == 0) {
+        redirect('welcome/notfound');
+        return;
+    }
+
+    // Data layanan
+    $data['layanan'] = $layanan;
+
+    // SEO
+    $data['meta_keyword']     = $layanan[0]->layanan_judul;
+    $data['meta_description'] = substr(strip_tags($layanan[0]->layanan_deskripsi), 0, 150);
+
+    // Load view
+    $this->load->view('frontend/v_header', $data);
+    $this->load->view('frontend/v_layanan_detail', $data);
+    $this->load->view('frontend/v_footer', $data);
+}
+
+// ================= LIST TESTIMONIAL =================
+    public function testimonial()
+    {
+        $data['pengaturan'] = $this->m_data->get_data('pengaturan')->row();
+
+        $data['testimonial'] = $this->db
+            ->where('testimonial_status', 'publish')
+            ->order_by('testimonial_id', 'DESC')
+            ->get('testimonial')
+            ->result();
+
+        $data['meta_keyword']     = 'Testimonial';
+        $data['meta_description'] = 'Testimonial pelanggan';
+
+        $this->load->view('frontend/v_header', $data);
+        $this->load->view('frontend/v_testimonial_detail', $data);
+        $this->load->view('frontend/v_footer', $data);
+    }
+
+    // ================= DETAIL TESTIMONIAL =================
+    public function testimonial_detail($id)
+    {
+        $data['pengaturan'] = $this->m_data->get_data('pengaturan')->row();
+
+        $testimonial = $this->db
+            ->where('testimonial_id', $id)
+            ->where('testimonial_status', 'publish')
+            ->limit(1)
+            ->get('testimonial')
+            ->result();
+
+        if (count($testimonial) == 0) {
+            redirect('welcome/notfound');
+            return;
+        }
+
+        $data['testimonial'] = $testimonial;
+        $data['meta_keyword']     = $testimonial[0]->testimonial_nama;
+        $data['meta_description'] = substr(strip_tags($testimonial[0]->testimonial_isi), 0, 150);
+
+        $this->load->view('frontend/v_header', $data);
+        $this->load->view('frontend/v_testimonial_detail', $data);
+        $this->load->view('frontend/v_footer', $data);
+    }
 
 }

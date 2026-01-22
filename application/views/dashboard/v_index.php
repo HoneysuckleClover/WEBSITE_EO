@@ -115,7 +115,7 @@
                         </div>
 
                         <div class="card-body">
-                            <h3>Selamat Datang 👋</h3>
+                            <h3>Selamat Datang</h3>
 
                             <?php
                                 $id_user = $this->session->userdata('id');

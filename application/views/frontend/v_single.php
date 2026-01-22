@@ -1,6 +1,6 @@
 <!-- INTRO SECTION -->
 <div class="intro intro-single route bg-image" 
-     style="background-image: url('<?= base_url(); ?>assets_frontend/img/stats-bg.jpg');">
+     style="background-image: url('<?= base_url(); ?>assets_frontend/img/4.jpg');">
 
   <div class="intro-overlay"></div>
 
@@ -73,8 +73,12 @@
 
           <!-- Article Content -->
           <div class="article-content">
-            <?= $a->artikel_konten ? html_entity_decode($a->artikel_konten) : ''; ?>
+            <?= $a->artikel_konten 
+              ? strip_tags(html_entity_decode($a->artikel_konten), '<p><br><b><i><strong><em><ul><ol><li><img><a>') 
+              : ''; 
+            ?>
           </div>
+
 
         </article>
         <?php } ?>

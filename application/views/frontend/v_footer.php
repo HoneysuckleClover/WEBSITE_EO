@@ -48,7 +48,7 @@
 
         <!-- Credits -->
         <p class="mb-0 small text-muted">
-            Designed by <a href="https://bootstrapmade.com/" target="_blank" class="footer-credit">BootstrapMade</a>
+            Designed by <a href="https://bootstrapmade.com/" target="_blank" class="footer-credit">NusantaraEventOrganizer</a>
         </p>
 
     </div>

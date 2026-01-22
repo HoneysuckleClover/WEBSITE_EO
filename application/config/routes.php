@@ -58,6 +58,14 @@ $route['dashboard/pengguna/update'] = 'dashboard/pengguna_update';
 $route['dashboard/pengguna/hapus/(:num)'] = 'dashboard/pengguna_hapus/$1';
 $route['dashboard/pengguna/hapus_aksi'] = 'dashboard/pengguna_hapus_aksi';
 
+// DASHBOARD TESTIMONIAL
+$route['dashboard/testimonial'] = 'dashboard/testimonial';
+$route['dashboard/testimonial/tambah'] = 'dashboard/testimonial_tambah';
+$route['dashboard/testimonial/tambah_aksi'] = 'dashboard/testimonial_tambah_aksi';
+$route['dashboard/testimonial/edit/(:num)'] = 'dashboard/testimonial_edit/$1';
+$route['dashboard/testimonial/update'] = 'dashboard/testimonial_update';
+$route['dashboard/testimonial/hapus/(:num)'] = 'dashboard/testimonial_hapus/$1';
+
 // =====================
 // FRONTEND ROUTES
 // =====================
@@ -88,21 +96,13 @@ $route['artikel/(:any)'] = 'welcome/single/$1';
 // Portfolio Detail
 $route['portfolio/(:any)'] = 'welcome/portfolio/$1';
 
-// =====================
-// TESTIMONIAL (FRONTEND)
-// =====================
-$route['testimonial'] = 'testimonial/index';
-$route['testimonial/kirim'] = 'testimonial/kirim';
-$route['testimonial/sukses'] = 'testimonial/sukses';
-$route['testimonial/list'] = 'testimonial/list';
+// Layanan
+$route['layanan'] = 'welcome/layanan';
+$route['layanan/(:any)'] = 'welcome/layanan/$1';
 
-
-// =====================
-// TESTIMONIAL ADMIN
-// =====================
-$route['dashboard/testimonial'] = 'dashboard/testimonial';
-$route['dashboard/testimonial/approve/(:num)'] = 'dashboard/testimonial_approve/$1';
-$route['dashboard/testimonial/hapus/(:num)'] = 'dashboard/testimonial_hapus/$1';
+// FRONTEND TESTIMONIAL
+$route['testimonial'] = 'welcome/testimonial';
+$route['testimonial/(:num)'] = 'welcome/testimonial_detail/$1';
 
 
 // =====================

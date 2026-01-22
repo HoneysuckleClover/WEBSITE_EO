@@ -1,6 +1,6 @@
 <!-- INTRO SECTION -->
 <div class="intro intro-single route bg-image" 
-     style="background-image: url(<?= base_url(); ?>assets_frontend/img/stats-bg.jpg);">
+     style="background-image: url(<?= base_url(); ?>assets_frontend/img/2.jpg);">
 
   <div class="intro-overlay"></div>
 

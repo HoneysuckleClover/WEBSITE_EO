@@ -1,3 +1,4 @@
+<?php defined('BASEPATH') OR exit('No direct script access allowed'); ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -148,6 +149,13 @@
             <a href="<?php echo base_url('dashboard/pages'); ?>" class="nav-link">
               <i class="nav-icon fas fa-copy"></i>
               <p>PAGES</p>
+            </a>
+          </li>
+
+          <li class="nav-item">
+            <a href="<?php echo base_url('dashboard/layanan'); ?>" class="nav-link">
+              <i class="nav-icon fas fa-cogs"></i>
+              <p>LAYANAN</p>
             </a>
           </li>
 
